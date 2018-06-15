@@ -39,9 +39,13 @@
     },
     "scripts" : {
         "start": "php -S 0.0.0.0:8080 -t public public/index.php ",
+<<<<<<< HEAD
         "test": "vendor\\bin\\phpunit.bat tests",
         "setproxy": "set http_proxy=10.181.96.4:3128 && set https_proxy=10.181.96.4:3128"
 
+=======
+        "test": "vendor\\bin\\phpunit.bat tests"
+>>>>>>> 6e987bd4ef5b4e20a9d5f6e60117eb850f265956
     },
     "config": {
         "process-timeout": 2000
