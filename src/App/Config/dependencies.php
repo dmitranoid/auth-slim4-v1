@@ -21,10 +21,11 @@ return [
 
         return new \App\Infrastructure\View\TwigView($twig);
     }),
-    'view'=> get(\App\Infrastructure\View\ViewInterface::class),
+    
     'flash' => factory(function (ContainerInterface $c) {
         return new Slim\Flash\Messages;
     }),
+
     \Psr\Log\LoggerInterface::class => function (ContainerInterface $c) {
         $settings = $c->get('settings');
         $logger = new Monolog\Logger($settings['logger']['name']);
@@ -32,13 +33,19 @@ return [
         $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['logger']['path'], Monolog\Logger::DEBUG));
         return $logger;
     },
-    'logger' => get(\Psr\Log\LoggerInterface::class),
-    'db' => factory(function(ContainerInterface $c) {
+
+    \PDO::class => factory(function(ContainerInterface $c) {
         $db = $c->get('settings')['database'];
         $dsn = "{$db['driver']}:{$db['dbname']}";
         return new \Pdo($dsn, $db['user'], $db['password']);
     }),
-    \PDO::class => get('db'),
+
+    'logger' => get(\Psr\Log\LoggerInterface::class),
+
+    'db' => get(\PDO::class),
+
+    'view'=> get(\App\Infrastructure\View\ViewInterface::class),
+
     'repositoryFactory' => function(ContainerInterface $c) {
         $db = $c->get('db');
         $repositoryFactory = new App\Infrastructure\Repository\PDORepositoryFactory($db);

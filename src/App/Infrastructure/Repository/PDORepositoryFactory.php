@@ -12,15 +12,17 @@ class PDORepositoryFactory
      * @var \PDO $db
      */
     protected $db;
+    
+    protected $hydrator;
 
-    public function __construct(\PDO $db){
+    public function __construct(\PDO $db, HydratorInterface $hydrator){
         $this->db = $db;
+        $this->hydrator = $hydrator;
     }
 
     public function getRepository($entityName){
 
         $fullClassname = "App\Infrastructure\Repository\PDO\\{$entityName}Repository";
-        $hydrator = new Hydrator();        
-        return new $fullClassname($this->db, $hydrator);
+        return new $fullClassname($this->db, $this->hydrator);
     }
 }
