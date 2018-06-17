@@ -6,7 +6,7 @@
  * Time: 7:52
  */
 
-namespace App\Infrastructure\View;
+namespace App\Infrastructure\Interfaces\View;
 
 
 use Psr\Http\Message\ResponseInterface;

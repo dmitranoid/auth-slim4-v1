@@ -3,79 +3,48 @@
 namespace App\Services;
 
 
-use Domain\Exceptions,
-    Domain\Exceptions\EntityNotFoundException;
+use App\ReadModel\Interfaces\UserFinderInterface;
 
 class UserService
 {
-    private $repository;
+    /**
+     * @var UserFinderInterface
+     */
+    private $userFinder;
 
-    private $dispatcher;
+    /**
+     * @var
+     */
+    private $entityManager;
 
-    public function __construct($repository, $dispatcher) {
-        $this->repository = $repository;
-        $this->dispatcher = $dispatcher;
+    public function __construct(UserFinderInterface $userFinder)
+    {
+        $this->userFinder = $userFinder;
+//        $this->entityManager = $entityManager;
     }
 
-    public function create($name) {
-        try {
-            $userEntity = $this->repository->findByName($name);
-        } catch (EntityNotFoundException $e) {
-            //ok
-        }
-        if ($userEntity) {
-            throw new EntityAlreadyExistsException('User with given name already exists' , ['name'=>$name]);            
-        }
-        $userEntity->activate();
-        // start transaction
-        $this->repository->add($userEntity);
-        // end transaction
-
-        $this->dispatcher->dispatch($userEntity->releaseEvents());
-
-        return true;
-        
+    public function finder(): UserFinderInterface
+    {
+        return $this->userFinder;
     }
 
-    public function rename($id, $newName) {
-        try {
-            $userEntity = $this->repository->findById($id); 
-        } catch (EntityNotFoundException $e) {
-            throw $e;
-        };
-        $userEntity->rename($newName);
+    public function create($name)
+    {
 
-        $repository->update($userEntity);
-
-        $this->dispatcher->dispatch($userEntity->releaseEvents());
-
-        return true;
-        
     }
 
-    public function activate($id) {
-        try {
-            $userEntity = $this->repository->findById($id);
-        } catch (EntityNotFoundException $e) {
-            return false;
-        }
-        $userEntity->activate();
+    public function rename($id, $newName)
+    {
 
-        $repository->update($userEntity);
-
-        $this->dispatcher->dispatch($userEntity->releaseEvents());
     }
-    
-    public function deactivate($id) {
-        try {
-            $userEntity = $this->repository->findById($id); 
-        } catch (EntityNotFoundException $e) {
-            return false;
-        }
-        $userEntity->deactivate();
 
-        $repository->update($userEntity);
+    public function activate($id)
+    {
 
-        $this->dispatcher->dispatch($userEntity->releaseEvents());
+    }
+
+    public function deactivate($id)
+    {
+
     }
 }

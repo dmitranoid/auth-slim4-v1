@@ -2,7 +2,9 @@
 
 namespace App\Infrastructure\Hydrator;
 
-class Hydrator
+use App\Infractructure\HydratorInterface\HydratorInterface;
+
+class Hydrator implements HydratorInterface
 {
     private $reflectionClassMap;
     /**

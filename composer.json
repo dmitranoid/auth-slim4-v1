@@ -32,20 +32,18 @@
         "php-di/php-di": "^6.0",
         "vlucas/phpdotenv": "^2.4",
         "ramsey/uuid": "^3.7",
-        "myclabs/php-enum": "^1.5"
+      "myclabs/php-enum": "^1.5",
+      "kanellov/slim-twig-flash": "^0.2.0",
+      "envms/fluentpdo": "^2.0.0"
     },
     "require-dev": {
-      "phpunit/phpunit": "^6.4"
+      "phpunit/phpunit": "^6.4",
+      "guzzlehttp/guzzle": "^6.3"
     },
     "scripts" : {
         "start": "php -S 0.0.0.0:8080 -t public public/index.php ",
-<<<<<<< HEAD
         "test": "vendor\\bin\\phpunit.bat tests",
         "setproxy": "set http_proxy=10.181.96.4:3128 && set https_proxy=10.181.96.4:3128"
-
-=======
-        "test": "vendor\\bin\\phpunit.bat tests"
->>>>>>> 6e987bd4ef5b4e20a9d5f6e60117eb850f265956
     },
     "config": {
         "process-timeout": 2000

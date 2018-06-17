@@ -69,11 +69,9 @@ if ($console) {
     require APP_DIR . '/routes-api.php';
     require APP_DIR . '/routes-web.php';
 }
-// initial db settings
-if('sqlite' == $container->get('settings')['database']['driver']){
-    $container->get('db')->exec('PRAGMA journal_mode=MEMORY;');
-    $container->get('db')->exec('PRAGMA busy_timeout=2000;');      
-}
+
+// temp
+\App\Helpers\NetworkHelper::$slimApp = $app;
 
 // Run!
 $app->run();

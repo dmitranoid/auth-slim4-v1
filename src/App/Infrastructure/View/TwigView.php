@@ -9,7 +9,7 @@
 namespace App\Infrastructure\View;
 
 
-use App\Infrastructure\View\ViewInterface;
+use App\Infrastructure\Interfaces\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Views\Twig;
 

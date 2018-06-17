@@ -44,19 +44,3 @@ table.printable td {
     border-bottom: 1px solid gray; /* Линия снизу */
     padding-left: 4px;
 }
-
-.plans-table.printable th:nth-child(1) {
-    width: 10rem;
-}
-
-.plans-table.printable th:nth-child(2) {
-    width: 5rem;
-}
-
-.plans-table.printable th:nth-child(5) {
-    width: 15rem;
-}
-
-table.printable .personal-td {
-    margin: 0.2rem;
-}

@@ -7,9 +7,10 @@ use
     Psr\Http\Message\RequestInterface,
     Psr\Http\Message\ResponseInterface,
     Psr\Log\LoggerInterface,
-    App\Infrastructure\View\ViewInterface;
+    App\Infrastructure\Interfaces\View\ViewInterface,
+    Slim\Flash\Messages as FlashMessages;
 
-class GenericController
+abstract class GenericController
 {
     /**
      * @var ViewInterface
@@ -24,11 +25,17 @@ class GenericController
      */
     protected $db;
 
-    public function __construct(ViewInterface $view, LoggerInterface $logger, \PDO $db)
+    /**
+     * @var FlashMessages
+     */
+    protected $flashMessages;
+
+    public function __construct(ViewInterface $view, LoggerInterface $logger, \PDO $db, FlashMessages $flashMessages)
     {
         $this->view = $view;
         $this->logger = $logger;
         $this->db = $db;
+        $this->flashMessages = $flashMessages;
     }
 
 }
