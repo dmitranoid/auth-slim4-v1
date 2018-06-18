@@ -8,14 +8,14 @@ use App\ReadModel\PdoFinder\Application\PdoApplicationFinder;
 use App\ReadModel\PdoFinder\Ticket\PdoTicketFinder;
 use App\ReadModel\PdoFinder\User\PdoUserFinder;
 use App\Services\AuthService;
-use App\Services\TicketService;
+use App\Services\JwtService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class AuthController extends GenericController
+class LoginController extends GenericController
 {
 
-    public function loginShow(
+    public function show(
         ServerRequestInterface $request,
         ResponseInterface $response,
         Array $args = []
@@ -27,12 +27,11 @@ class AuthController extends GenericController
             'content' => '',
             'application' => $query['application'] ?? '',
             'username' => $query['username'] ?? $user['name'] ?? '',
-            'password' => '',
         ];
-        return $this->view->render($response, 'front/auth/show.twig', $viewData);
+        return $this->view->render($response, 'front/login/show.twig', $viewData);
     }
 
-    public function loginPost(
+    public function post(
         ServerRequestInterface $request,
         ResponseInterface $response,
         Array $args = []
@@ -62,14 +61,14 @@ class AuthController extends GenericController
             return $response->withRedirect(NetworkHelper::path_for_route('front.login.show', [], $query));
         }
         // create ticket
-        $ticketService = new TicketService(
+        $jwtService = new JwtService(
             new PdoTicketFinder($this->db),
             $userFinder,
             $appFinder
         );
-        $ticket = $ticketService->generateTicket($user->id, $application->id);
+        $jwtAccessToken = $jwtService->generateAccessToken($user->id, $application->id);
         // TODO need send username and password to client app
-        return $response->withRedirect($ticketService->generateRedirectUrl($app->url . $ticket->getTicket()));
+        return $response->withRedirect($jwtService->generateRedirectUrl($app->url, $jwtAccessTokenToken));
     }
 
 }

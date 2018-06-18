@@ -8,9 +8,8 @@ use App\ReadModel\Interfaces\ApplicationFinderInterface;
 use App\ReadModel\Interfaces\TicketFinderInterface;
 use App\ReadModel\Interfaces\UserFinderInterface;
 
-class TicketService
+class JwtService
 {
-    const ticketSalt = 'bYfd5!b5-/F4s';
     /**
      * @var TicketFinderInterface
      */
@@ -41,12 +40,12 @@ class TicketService
         $this->tickerFinder->byUserApp($userId, $appId);
     }
 
-    public function generateTicket($userId, $appId)
+    public function generateToken($userId, $appId)
     {
         $user = $this->userFinder->byId($userId);
         $app = $this->appFinder->byId($appId);
         if ($user && $app) {
-            return md5($user['name'] . $app['code'] . $this::ticketSalt);
+            return md5($user['name'] . $app['code'] );
         }
         return false;
     }

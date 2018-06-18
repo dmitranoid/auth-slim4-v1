@@ -11,12 +11,12 @@ namespace App\Api\Controllers;
 use App\ReadModel\PdoFinder\Application\PdoApplicationFinder;
 use App\ReadModel\PdoFinder\Ticket\PdoTicketFinder;
 use App\ReadModel\PdoFinder\User\PdoUserFinder;
-use App\Services\TicketService;
+use App\Services\JwtService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class TicketController
+class AuthController
 {
     /**
      * @var LoggerInterface
@@ -35,15 +35,15 @@ class TicketController
         $this->db = $db;
     }
 
-    public function check(ServerRequestInterface $request, ResponseInterface $response, $args)
+    public function checkToken(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
 
-        $ticketService = new TicketService(
+        $jwtService = new JwtService(
             new PdoTicketFinder($this->db),
             new PdoUserFinder($this->db),
             new PdoApplicationFinder($this->db)
         );
-        $ticket = $ticketService->checkTicketByNo();
+        $token = $jwtService->checkToken();
         $data = [];
         return $response->withJson($data);
     }
