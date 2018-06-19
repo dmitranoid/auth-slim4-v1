@@ -11,7 +11,7 @@ class PdoUserFinder extends PdoGenericFinder implements UserFinderInterface
     function byId($id)
     {
         $query = $this->fquery
-            ->from('user')
+            ->from('users')
             ->where('id', $id);
         return $query->fetch();
     }

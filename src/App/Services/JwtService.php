@@ -7,9 +7,12 @@ namespace App\Services;
 use App\ReadModel\Interfaces\ApplicationFinderInterface;
 use App\ReadModel\Interfaces\TicketFinderInterface;
 use App\ReadModel\Interfaces\UserFinderInterface;
+use Firebase\JWT\JWT;
 
 class JwtService
 {
+
+    protected $secretKey;
     /**
      * @var TicketFinderInterface
      */
@@ -25,14 +28,28 @@ class JwtService
      */
     protected $appFinder;
 
+    /**
+     * Return secretKey
+     * @param int $userId
+     * @param int $appId $
+     * @return string
+     */
+
+    protected function getSecretKey($userId, $appId)
+    {
+        return $this->secretKey; //getenv('AUTH_SECRET') ;
+    }
+
     public function __construct(
         TicketFinderInterface $ticketFinder,
         UserFinderInterface $userFinder,
-        ApplicationFinderInterface $appFinder
+        ApplicationFinderInterface $appFinder,
+        $secretKey
     ) {
         $this->tickerFinder = $ticketFinder;
         $this->userFinder = $userFinder;
         $this->appFinder = $appFinder;
+        $this->secretKey = $secretKey;
     }
 
     public function checkTicket($userId, $appId)
@@ -44,9 +61,17 @@ class JwtService
     {
         $user = $this->userFinder->byId($userId);
         $app = $this->appFinder->byId($appId);
-        if ($user && $app) {
-            return md5($user['name'] . $app['code'] );
-        }
-        return false;
+        assert($user && $app, 'user and app must exists for token generation');
+        $jwtPayloadData = [
+            'userId'=>$user['id'],
+            'appId'=>$app['id'],
+            'iss'=>getenv('SITE_URL'),
+            'iat'=> (new \DateTime())->getTimestamp(),
+            'exp'=> (new \DateTime('+12 hour'))->getTimestamp(),
+
+        ];
+        $jwtToken = JWT::encode($jwtPayloadData, $this->getSecretKey($userId, $appId));
+
+        return $jwtToken;
     }
 }

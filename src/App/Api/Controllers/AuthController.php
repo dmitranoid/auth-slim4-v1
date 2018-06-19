@@ -41,7 +41,8 @@ class AuthController
         $jwtService = new JwtService(
             new PdoTicketFinder($this->db),
             new PdoUserFinder($this->db),
-            new PdoApplicationFinder($this->db)
+            new PdoApplicationFinder($this->db),
+            getenv('SECRET_KEY')
         );
         $token = $jwtService->checkToken();
         $data = [];

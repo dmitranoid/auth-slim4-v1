@@ -8,6 +8,6 @@ function responseJsonError(\Psr\Http\Message\ResponseInterface $response, $statu
     return $response->withStatus($statusCode)->withJson($message);
 }
 
-$app->group('/login/', function () {
-    $this->get('/check', App\Api\Controllers\AuthController::class . ':checkToken')->setName('login.checkToken');
+$app->group('/', function () {
+    $this->get('checktoken', App\Api\Controllers\AuthController::class . ':checkToken')->setName('login.checkToken');
 });
