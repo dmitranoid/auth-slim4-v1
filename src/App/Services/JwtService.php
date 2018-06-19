@@ -4,10 +4,11 @@
 namespace App\Services;
 
 
-use App\ReadModel\Interfaces\ApplicationFinderInterface;
 use App\ReadModel\Interfaces\TicketFinderInterface;
+use App\ReadModel\Interfaces\ApplicationFinderInterface;
 use App\ReadModel\Interfaces\UserFinderInterface;
 use Firebase\JWT\JWT;
+use Firebase\JWT\SignatureInvalidException;
 
 class JwtService
 {
@@ -52,10 +53,22 @@ class JwtService
         $this->secretKey = $secretKey;
     }
 
-    public function checkTicket($userId, $appId)
+    public function validateToken($token)
+    {
+        try {
+            $tokenData = JWT::decode($token, getenv('SECRET_KEY'));
+        } catch (SignatureInvalidException $e) {
+            // TODO log Alert
+            return false;
+        }
+        return $tokenData;
+    }
+
+    public function checkTokenPermissions(\stdClass $tokenData)
     {
         $this->tickerFinder->byUserApp($userId, $appId);
     }
+
 
     public function generateToken($userId, $appId)
     {

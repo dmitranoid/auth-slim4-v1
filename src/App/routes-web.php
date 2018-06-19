@@ -13,21 +13,3 @@ $app->get('/', function (
 })->setName('front.home');
 $app->get('/login', App\Http\Controllers\LoginController::class . ':show')->setName('front.login.show');
 $app->post('/login', App\Http\Controllers\LoginController::class . ':post')->setName('front.login.post');
-
-$app->get('/testdb',
-    function (\Psr\Http\Message\RequestInterface $req, \Psr\Http\Message\ResponseInterface $resp, $args) use ($app) {
-
-        $db = new Envms\FluentPDO\Query($app->getContainer()->get('db'));
-        $query = $db->from('users')
-            ->where('id', 1)
-            ->limit(1);
-
-        print_r($query->fetch());
-        echo("<br>==============<br>");
-        foreach ($query as $row) {
-            print_r($row);
-            print_r("<br>");
-        }
-        return $resp;
-    });
-

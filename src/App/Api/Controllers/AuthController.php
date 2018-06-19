@@ -45,6 +45,7 @@ class AuthController
             getenv('SECRET_KEY')
         );
         $token = $jwtService->checkToken();
+
         $data = [];
         return $response->withJson($data);
     }
