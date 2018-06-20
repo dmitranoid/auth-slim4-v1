@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Functional\Front\Auth;
+namespace Tests\Functional\Front\Login;
 
 
 use Tests\Functional\GenericHttpTestCase;
 
-class AuthTest extends GenericHttpTestCase
+class LoginTest extends GenericHttpTestCase
 {
     public function testGetHomePageRedirectToLogin()
     {

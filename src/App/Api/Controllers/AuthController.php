@@ -37,16 +37,28 @@ class AuthController
 
     public function checkToken(ServerRequestInterface $request, ResponseInterface $response, $args)
     {
+        $token = $request->getQueryParam('token', '');
 
         $jwtService = new JwtService(
             new PdoTicketFinder($this->db),
             new PdoUserFinder($this->db),
             new PdoApplicationFinder($this->db),
-            getenv('SECRET_KEY')
+            getenv('AUTH_SECRET')
         );
-        $token = $jwtService->checkToken();
+        $token = $jwtService->validateToken($token);
 
-        $data = [];
+        if($token) {
+            $data = ['status'=>'success'];
+        } else {
+            $data = [
+                'status'=> 'error',
+                'errors' => [
+                    'code'=> '0',
+                    'message' => 'validate token error',
+                ]
+            ];
+        }
+
         return $response->withJson($data);
     }
 }

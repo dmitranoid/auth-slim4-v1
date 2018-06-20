@@ -11,5 +11,6 @@ $app->get('/', function (
 ) use ($app) {
     return $response->withRedirect($app->getRouter()->pathFor('front.login.show'));
 })->setName('front.home');
+
 $app->get('/login', App\Http\Controllers\LoginController::class . ':show')->setName('front.login.show');
 $app->post('/login', App\Http\Controllers\LoginController::class . ':post')->setName('front.login.post');

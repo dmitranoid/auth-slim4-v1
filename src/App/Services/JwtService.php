@@ -7,8 +7,10 @@ namespace App\Services;
 use App\ReadModel\Interfaces\TicketFinderInterface;
 use App\ReadModel\Interfaces\ApplicationFinderInterface;
 use App\ReadModel\Interfaces\UserFinderInterface;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
+use PHPUnit\Runner\Exception;
 
 class JwtService
 {
@@ -56,11 +58,19 @@ class JwtService
     public function validateToken($token)
     {
         try {
-            $tokenData = JWT::decode($token, getenv('SECRET_KEY'));
+            $tokenData = JWT::decode($token, $this->getSecretKey(null, null), ['HS256']);
         } catch (SignatureInvalidException $e) {
-            // TODO log Alert
+            // TODO log Alerts
             return false;
+        } catch (ExpiredException $e) {
+            return false;
+        } catch (\UnexpectedValueException $e) {
+            return false;
+        } catch ( \Throwable $e ) {
+            // all other errors
+            return false;   
         }
+
         return $tokenData;
     }
 
