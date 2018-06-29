@@ -36,12 +36,6 @@ return [
     },
 
     \PDO::class => factory(function(ContainerInterface $c) {
-
-        $pdoAttributes = [
-            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_BOTH,
-
-        ];
-
         $db = $c->get('settings')['database'];
         $dsn = "{$db['driver']}:{$db['dbname']}";
         try {
@@ -56,13 +50,28 @@ return [
         return $pdo;
     }),
 
+    \App\Infrastructure\Interfaces\Session\SessionInterface::class => factory(function(ContainerInterface $c){
+        return new App\Infrastructure\Session\PhpSession();
+    }),
+
+    \App\Infrastructure\Interfaces\Auth\Auth::class => factory (function(ContainerInterface $c) {
+        return new \App\Infrastructure\Auth\Auth(
+            new \App\ReadModel\PdoFinder\User\PdoUserFinder($c->get('db')),
+            new \App\ReadModel\PdoFinder\Application\PdoApplicationFinder($c->get('db')),
+            new \App\Infrastructure\PasswordHasher\PasswordHasher(),
+            $c->get('session')
+        );
+    }),
+
     'logger' => get(\Psr\Log\LoggerInterface::class),
 
     'db' => get(\PDO::class),
 
-    'view' => get(\App\Infrastructure\View\ViewInterface::class),
+    'view' => get(\App\Infrastructure\View\TwigView::class),
 
     'flash' => get(Slim\Flash\Messages::class),
+
+    'session' => get(\App\Infrastructure\Interfaces\Session\SessionInterface::class),
 
     'repositoryFactory' => function(ContainerInterface $c) {
         $db = $c->get('db');

@@ -11,38 +11,23 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Слой аутентификации при обращении к API
+ *
  */
 class JwtAuthMiddleware
 {
     protected $container;
 
-    /**
-     * @var ApiAuthService
-     */
-    protected $authService;
-
-    public function __construct() {
-//        $this->container = $container;
-    }
-
-    /**
-     * Get the bearer token from the request headers.
-     *
-     * @return string|null
-     */
-    protected function getBearerToken($authHeaderString)
+    public function __construct()
     {
 
-        if ('Bearer ' == substr($authHeaderString, 0, 7)) {
-            return substr($authHeaderString, 7, strlen($authHeaderString)-7);
-        }
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next) {
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $next)
+    {
 
         $token = $request->getHeader('Authorisation');
 
-        $db = new \PDO('');
+        $db = new \PDO('sqlite::memory:'); // при вызове validateToken finders не используются (пока)
 
         $jwtService = new JwtService(
             new PdoTicketFinder($db),
@@ -54,11 +39,27 @@ class JwtAuthMiddleware
         $jwtData = $jwtService->validateToken($token);
 
         if (false === $jwtData) {
-            return $response->withStatus(401)->withJson(['status'=>'error', 'errors'=>['code'=>'0', 'message'=> 'check token error']]);
+            return $response->withStatus(401)->withJson(['status' => 'error', 'errors' => ['code' => '0', 'message' => 'check token error']]);
         }
 
-        $request = $request->withAttribute('jwtUserId', $jwtData['userId']??'')->withAttribute('jwtAppId', $jwtData['appId']??'' );
+        // если проверка токена прошла успешно, добавляем атрибуты
+        // authUserId, 'authAppId' к запросу
+        $request = $request->withAttribute('authUserId', $jwtData->userId ?? '')->withAttribute('authAppId', $jwtData->appId ?? '');
 
         return $next($request, $response);
+    }
+
+    /**
+     * Получить bearer токен из заголовка Authorisation запроса
+     *
+     * @var string
+     * @return string|null
+     */
+    protected function getBearerToken($authHeaderString)
+    {
+
+        if ('Bearer ' == substr($authHeaderString, 0, 7)) {
+            return substr($authHeaderString, 7, strlen($authHeaderString) - 7);
+        }
     }
 }

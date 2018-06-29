@@ -6,7 +6,7 @@
     <div class="column col-4 col-mr-auto">
         <h1>{{ title|raw }}</h1>
         <form action="{{ path_for('front.login.post') }}" method="post">
-            {{ forms.hidden('application', application) }}
+            {{ forms.hidden('appId', application) }}
             {{ forms.hidden('userip', userip) }}
             {{ forms.input('пользователь', 'username', username) }}
             {{ forms.input('пароль', 'password', password, 'password') }}

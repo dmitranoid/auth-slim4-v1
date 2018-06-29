@@ -14,3 +14,10 @@ $app->get('/', function (
 
 $app->get('/login', App\Http\Controllers\LoginController::class . ':show')->setName('front.login.show');
 $app->post('/login', App\Http\Controllers\LoginController::class . ':post')->setName('front.login.post');
+
+$app->get('/homepage', function () {
+    $this->get('/', App\Http\Controllers\HomeController::class, 'show')->setName('front.homepage');
+})->add(new \App\Middlewares\SessionAuthMiddleware(
+    $app->getRouter(),
+    $app->getContainer()->get(\App\Infrastructure\Interfaces\Auth\Auth::class)
+));

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Services;
 
 
@@ -10,8 +9,13 @@ use App\ReadModel\Interfaces\UserFinderInterface;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
-use PHPUnit\Runner\Exception;
 
+/**
+ * Сервис для работы с JavaWebToken
+ *
+ * Class JwtService
+ * @package App\Services
+ */
 class JwtService
 {
 
@@ -76,7 +80,7 @@ class JwtService
 
     public function checkTokenPermissions(\stdClass $tokenData)
     {
-        $this->tickerFinder->byUserApp($userId, $appId);
+        // $this->tickerFinder->byUserApp($userId, $appId);
     }
 
 

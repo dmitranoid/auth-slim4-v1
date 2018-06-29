@@ -10,13 +10,22 @@ namespace App\Http\Controllers;
 
 
 use App\Infrastructure\View\ViewInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class HomeController
+class HomeController extends GenericController
 {
+    public function show(ServerRequestInterface $request, ResponseInterface $response, Array $args)
+    {
 
-    /**
-     * HomeController constructor.
-     */
+    }
+
+
+    public function store(ServerRequestInterface $request, ResponseInterface $response, Array $args)
+    {
+
+    }
+
 
 }

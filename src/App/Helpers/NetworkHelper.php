@@ -50,7 +50,7 @@ class NetworkHelper
         return $ipaddress;
     }
 
-    static function path_for_route($routeName, $routeParams, $queryParams)
+    static function path_for_route($routeName, $routeParams = [], $queryParams = [])
     {
         return self::$slimApp->getRouter()->pathFor($routeName, $routeParams, $queryParams);
     }

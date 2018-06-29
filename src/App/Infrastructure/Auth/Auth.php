@@ -1,13 +1,14 @@
 <?php
 
 
-namespace App\Services;
+namespace App\Infrastructure\Auth;
 
 use App\Infrastructure\Interfaces\PasswordHasher\PasswordHasherInterface;
+use App\Infrastructure\Interfaces\Session\SessionInterface;
 use App\ReadModel\Interfaces\ApplicationFinderInterface;
 use App\ReadModel\Interfaces\UserFinderInterface;
 
-class AuthService
+class Auth implements \App\Infrastructure\Interfaces\Auth\Auth
 {
     /**
      * @var UserFinderInterface
@@ -23,24 +24,56 @@ class AuthService
      */
     private $passwordHasher;
 
+    /**
+     * @var SessionInterface
+     */
+    private $session;
+
     public function __construct(
         UserFinderInterface $userFinder,
         ApplicationFinderInterface $applicationFinder,
-        PasswordHasherInterface $hasher
+        PasswordHasherInterface $hasher,
+        SessionInterface $session
     ) {
         $this->userFinder = $userFinder;
         $this->applicationFinder = $applicationFinder;
         $this->passwordHasher = $hasher;
+        $this->session = $session;
     }
 
-    public function checkUserLogin($name, $password)
+    public function login($username, $password)
     {
-        $user = $this->userFinder->byName($name);
-        if (!$user) {
+        if (!$this->session->get('user', false)) {
+            $user = $this->userFinder->byNameAndPassword($username, $password);
+            if ($user) {
+                $this->session->set('user', $user);
+                return true;
+            }
             return false;
         }
-        return $this->passwordHasher->check($password, $user['password']);
     }
+
+    public function logout()
+    {
+        $this->session->remove('user');
+    }
+
+    function isLoggedIn(): bool
+    {
+        return (bool)$this->session->exist('user');
+    }
+
+
+    /*
+        public function checkUserLogin($name, $password)
+        {
+            $user = $this->userFinder->byName($name);
+            if (!$user) {
+                return false;
+            }
+            return $this->passwordHasher->check($password, $user['password']);
+        }
+    */
 
     public function checkUserPermissionForApp($username, $application)
     {
