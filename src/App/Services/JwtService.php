@@ -3,12 +3,14 @@
 namespace App\Services;
 
 
-use App\ReadModel\Interfaces\TicketFinderInterface;
 use App\ReadModel\Interfaces\ApplicationFinderInterface;
+use App\ReadModel\Interfaces\TicketFinderInterface;
 use App\ReadModel\Interfaces\UserFinderInterface;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
+use Slim\Http\Uri;
+use Slim\Router;
 
 /**
  * Сервис для работы с JavaWebToken
@@ -70,7 +72,7 @@ class JwtService
             return false;
         } catch (\UnexpectedValueException $e) {
             return false;
-        } catch ( \Throwable $e ) {
+        } catch (\Throwable $e) {
             // all other errors
             return false;   
         }
@@ -94,11 +96,26 @@ class JwtService
             'appId'=>$app['id'],
             'iss'=>getenv('SITE_URL'),
             'iat'=> (new \DateTime())->getTimestamp(),
-            'exp'=> (new \DateTime('+12 hour'))->getTimestamp(),
+            'exp' => (new \DateTime('+24 hour'))->getTimestamp(),
 
         ];
         $jwtToken = JWT::encode($jwtPayloadData, $this->getSecretKey($userId, $appId));
 
         return $jwtToken;
+    }
+
+    /**
+     * @param $appUrl
+     * @param $redirectBackUrl
+     * @param $jwtAccessToken
+     * @return string
+     */
+    public function generateRedirectUrl($appUrl, $redirectBackUrl, $jwtAccessToken)
+    {
+        $query = [
+            'token' => $jwtAccessToken,
+            'redirectbackurl' => $redirectBackUrl,
+        ];
+        return $appUrl .= (parse_url($appUrl, PHP_URL_QUERY) ? '&' : '?') . http_build_query($query);
     }
 }

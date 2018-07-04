@@ -25,15 +25,21 @@ class LoginController extends GenericController
         $appFinder = new PdoApplicationFinder($this->db);
         $user = isset($query['username']) ? $userFinder->byIpAddress(NetworkHelper::getClientIp($request->getServerParams())) : false;
         $app = isset($query['app']) ? $appFinder->byCode($query['app']) : false;
+
         if (!$app) {
             // входим прямо на сайт
             // $this->flashMessages->addMessage('error', 'Неправильно переданные данные, обратитесь к администратору');
+            $app = [
+                'id' => null,
+                'name' => ''
+            ];
         }
         $viewData = [
             'content' => 'Вход в систему',
-            'appId' => $app['id'],
-            'title' => $app['name'],
-            'username' => $query['username'] ?? $user['name'] ?? '',
+            'application' => $app['code'] ?? '',
+            'title' => $app['name'] ?? '',
+            'redirectbackurl' => $query['redirectbackurl'] ?? '',
+            'username' => $query['username'] ?? $user['username'] ?? '',
         ];
         return $this->view->render($response, 'front/login/show.twig', $viewData);
     }
@@ -53,31 +59,56 @@ class LoginController extends GenericController
             $this->session
         );
         // есть ли пользователь с введенными данными
-        if (false === ($user = $userFinder->byName($query['username'] ?? '')
+        if (false === ($userFinder->byName($query['username'] ?? false)
                 && $auth->login($query['username'] ?? '', $query['password'] ?? '')
             )) {
             $this->logger->alert('login error',
-                ['username' => $query['username'], 'application' => $query['application']]);
+                ['username' => $query['username'], 'application' => $query['application'] ?? '']);
             $this->flashMessages->addMessage('error', 'неверное имя пользователя или пароль');
-            return $response->withRedirect(NetworkHelper::path_for_route('front.login.show', [], $query));
+            return $response->withRedirect(NetworkHelper::path_for_route('front.login.show'));
+        }
+        // если не задано приложение, то пускаем на сайт
+        if (empty($query['application'] ?? '')) {
+            return $response->withRedirect(NetworkHelper::path_for_route('front.homepage'));
         }
         // есть ли у пользователя права на приложение
-        if (false == $auth->checkUserPermissionForApp($query['username'], $query['application'] ?? '')) {
+        if (false == $auth->checkUserPermissionForApp($query['username'], $query['application'])) {
             $this->logger->alert('application is not allowed for user',
                 ['username' => $query['username'], 'application' => $query['application']]);
             $this->flashMessages->addMessage('error', 'нет разрешения на использование приложения');
-            return $response->withRedirect(NetworkHelper::path_for_route('front.login.show', [], $query));
+            return $response->withRedirect(NetworkHelper::path_for_route('front.login.show'));
         }
-        // выдаем ключ
+        // если всё хорошо, выдаем ключ
+        $app = $appFinder->byCode($query['application']);
+        $user = $userFinder->byName($query['username']);
         $jwtService = new JwtService(
             new PdoTicketFinder($this->db),
             $userFinder,
             $appFinder,
             getenv('AUTH_SECRET')
         );
-        $jwtAccessToken = $jwtService->generateToken($user->id, $app->id);
+        $jwtAccessToken = $jwtService->generateToken($user['id'], $app['id']);
         // TODO need send username and password to client app
-        return $response->withRedirect($jwtService->generateRedirectUrl($app->url, $jwtAccessToken));
+        $redirectBackUrl = $query['redirectbackurl'] ?? '';
+        return $response->withRedirect($jwtService->generateRedirectUrl($app['url'], $redirectBackUrl,
+            $jwtAccessToken));
+    }
+
+    public function logout(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        Array $args = []
+    ) {
+        $userFinder = new PdoUserFinder($this->db);
+        $appFinder = new PdoApplicationFinder($this->db);
+        $auth = new Auth(
+            $userFinder,
+            $appFinder,
+            new PasswordHasher(),
+            $this->session
+        );
+        $auth->logout();
+        return $response->withRedirect(NetworkHelper::path_for_route('front.login.show'));
     }
 
 }

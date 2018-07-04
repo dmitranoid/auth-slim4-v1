@@ -11,9 +11,11 @@ namespace App\Infrastructure\Interfaces\Auth;
 
 use App\Infrastructure\Interfaces\Session\SessionInterface;
 
-interface Auth
+interface AuthInterface
 {
     function login($username, $password);
     function logout();
     function isLoggedIn():bool;
+
+    function getCurrentUser();
 }

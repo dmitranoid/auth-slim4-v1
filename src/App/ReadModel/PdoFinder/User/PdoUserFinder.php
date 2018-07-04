@@ -42,13 +42,13 @@ class PdoUserFinder extends PdoGenericFinder implements UserFinderInterface
         return $data;
     }
 
-    function byNameAndPassword($username, $password)
+    function byNameAndPasswordHash($username, $password)
     {
-        $data = $this->fquery
+        $query = $this->fquery
             ->from('users')
             ->where('name', $username)
-            ->and('password', $password)
+            ->where('password', $password)
             ->limit(1);
-        return $data;
+        return $query->fetch();
     }
 }

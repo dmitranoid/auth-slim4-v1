@@ -10,7 +10,7 @@ namespace App\Middlewares;
 
 
 use App\Helpers\NetworkHelper;
-use App\Infrastructure\Auth\Auth;
+use App\Infrastructure\Interfaces\Auth\AuthInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouterInterface;
@@ -22,7 +22,7 @@ class SessionAuthMiddleware
 
     protected $router;
 
-    public function __construct(RouterInterface $router, Auth $auth)
+    public function __construct(RouterInterface $router, AuthInterface $auth)
     {
         $this->auth = $auth;
         $this->router = $router;
@@ -34,6 +34,6 @@ class SessionAuthMiddleware
             $redirectBackUrl =['redirect_url' => $request->getUri()->getPath()];
             return $response->withRedirect(NetworkHelper::path_for_route('front.login.show',[], $redirectBackUrl));
         }
-        $next($request, $response);
+        return $next($request, $response);
     }
 }

@@ -8,9 +8,20 @@ use App\ReadModel\PdoFinder\User\PdoUserFinder;
 use App\Services\UserService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class UserController
 {
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var \PDO
+     */
+    protected $db;
+
     public function __construct(LoggerInterface $logger, \PDO $db)
     {
         $this->logger = $logger;
@@ -18,21 +29,21 @@ class UserController
     }
     public function getUserInfo(RequestInterface $request, ResponseInterface $response, array $args)
     {
-        $inputData = $request->getQueryParams();
+        $query = $request->getQueryParams();
+        $authUserId = $request->getAttribute('authUserId');
         $userService = new UserService(
             new PdoUserFinder($this->db)
         );
 
-        $user = $userService->finder()->byId($inputData['jwtUserId']);
+        $user = $userService->finder()->byId($authUserId);
 
-        $user = array_intersect_key(['id', 'name', 'status', 'comment'], $user);
+        $user = array_intersect_key($user, ['id' => '', 'name' => '', 'status' => '', 'comment' => '']);
 
         $data = [
             'result' => 'success',
             'data' => $user,
         ];
-
-        return $data;
+        return $response->withStatus(200)->withJson($data);
     }
 
     /**

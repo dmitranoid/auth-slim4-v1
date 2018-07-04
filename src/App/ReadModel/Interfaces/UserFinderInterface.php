@@ -16,5 +16,5 @@ interface UserFinderInterface extends GenericFinderInterface
 
     function byIpAddress($ipAddress);
 
-    function byNameAndPassword($name, $password);
+    function byNameAndPasswordHash($name, $password);
 }

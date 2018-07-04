@@ -8,10 +8,7 @@ function responseJsonError(\Psr\Http\Message\ResponseInterface $response, $statu
     return $response->withStatus($statusCode)->withJson($message);
 }
 
-$app->group('/', function () {
-    $this->get('checktoken', App\Api\Controllers\AuthController::class . ':checkToken')->setName('login.checkToken');
-});
+$app->get('/checktoken', App\Api\Controllers\AuthController::class . ':checkToken')->setName('login.checkToken');
 //
-$app->group('/', function() {
-    $this->get('userinfo', App\Api\Controllers\UserController::class. ':getInfo')->setName('api.user.getinfo');
-})->add(new \App\Middlewares\JwtAuthMiddleware());
+$app->get('/userinfo', App\Api\Controllers\UserController::class . ':getUserInfo')->setName('api.user.getinfo')
+    ->add(new \App\Middlewares\JwtAuthMiddleware());

@@ -35,7 +35,7 @@ class JwtServiceTest extends TestCase
     public function setUp()
     {
 
-        $this->secretKey = 'test_key';
+        $this->secretKey = '12345678';
         $db = $this->getRealPdoDb();
 
         $this->jwtService = new JwtService(
@@ -82,5 +82,14 @@ class JwtServiceTest extends TestCase
         $this->expectException(SignatureInvalidException::class);
         $decodedToken = JWT::decode($jwtToken, $this->secretKey, ['HS256']);
     }
+
+    public function testValidateToken()
+    {
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxIiwiYXBwSWQiOiIxIiwiaXNzIjoibG9jYWxob3N0OjgwODAiLCJpYXQiOjE1MzA1NTU3NzUsImV4cCI6MTUzMDY0MjE3NX0.229GSiRuv4rdB9iiBiwCjfH6fkpIWBbTLlrKuYf4mD0';
+        $result = $this->jwtService->validateToken($token);
+        var_dump($result);
+        $this->assertInstanceOf(\stdClass::class, $result, 'token not valid');
+    }
+
 
 }

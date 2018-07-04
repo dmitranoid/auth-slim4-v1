@@ -54,7 +54,7 @@ return [
         return new App\Infrastructure\Session\PhpSession();
     }),
 
-    \App\Infrastructure\Interfaces\Auth\Auth::class => factory (function(ContainerInterface $c) {
+    \App\Infrastructure\Interfaces\Auth\AuthInterface::class => factory(function (ContainerInterface $c) {
         return new \App\Infrastructure\Auth\Auth(
             new \App\ReadModel\PdoFinder\User\PdoUserFinder($c->get('db')),
             new \App\ReadModel\PdoFinder\Application\PdoApplicationFinder($c->get('db')),

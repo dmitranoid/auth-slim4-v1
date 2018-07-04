@@ -26,7 +26,7 @@
 
     <script src="/js/app.js"></script>
 
-    <title>{% block TITLE %}Планы работ-{{ title }}{% endblock %}</title>
+    <title>{% block TITLE %}{{ title }}{% endblock %}</title>
 </head>
 <body>
 <div id="layout" class="container">
@@ -35,7 +35,7 @@
             {% block NAVBAR %}{% include '_/menu.twig' %}{% endblock %}
         {% else %}
             <section class="navbar-section">
-                <a href="#" class="navbar-brand mr-2 disableClick">Задача "планы работ"</a>
+                <a href="#" class="navbar-brand mr-2 disableClick"></a>
             </section>
             <section class="navbar-section"></section>
         {% endif %}

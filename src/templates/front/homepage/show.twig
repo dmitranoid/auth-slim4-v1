@@ -1,0 +1,26 @@
+{% extends 'front/layouts/app.twig' %}
+
+{% import '_/macro_forms.twig' as forms %}
+{% import '_/macro_tables.twig' as tables %}
+
+{% block CONTENT %}
+    {% set tableDefenitions = {
+        'Приложение': 'name',
+        'Ссылка':'link'
+    } %}
+    <h1>{{ title|raw }}</h1>
+    <table class="table-userapps">
+        {{ tables.header(['Приложение', 'разрешения']) }}
+        <tbody>
+        {% for key, row in items %}
+            <tr data-appid="{{ row['id'] }}">
+                <td><a href="{{ row['url'] }}">{{ row['name'] }}</a></td>
+                <td>
+                    <i class="far {% if row['status'] and row['user_app_status'] %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        {# tables.rows(items) #}
+    </table>
+{% endblock %}

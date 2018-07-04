@@ -3,12 +3,13 @@
 
 namespace App\Infrastructure\Auth;
 
-use App\Infrastructure\Interfaces\PasswordHasher\PasswordHasherInterface;
 use App\Infrastructure\Interfaces\Session\SessionInterface;
+use App\Infrastructure\Interfaces\PasswordHasher\PasswordHasherInterface;
 use App\ReadModel\Interfaces\ApplicationFinderInterface;
+
 use App\ReadModel\Interfaces\UserFinderInterface;
 
-class Auth implements \App\Infrastructure\Interfaces\Auth\Auth
+class Auth implements \App\Infrastructure\Interfaces\Auth\AuthInterface
 {
     /**
      * @var UserFinderInterface
@@ -43,14 +44,17 @@ class Auth implements \App\Infrastructure\Interfaces\Auth\Auth
 
     public function login($username, $password)
     {
-        if (!$this->session->get('user', false)) {
-            $user = $this->userFinder->byNameAndPassword($username, $password);
-            if ($user) {
-                $this->session->set('user', $user);
-                return true;
-            }
-            return false;
+        /*
+        if ($this->session->get('user', false)) {
+            return true;
         }
+        */
+        $user = $this->userFinder->byName($username);
+        if ($user && $this->passwordHasher->check($password, $user['password'])) {
+            $this->session->set('user', $user);
+            return true;
+        }
+        return false;
     }
 
     public function logout()
@@ -61,6 +65,12 @@ class Auth implements \App\Infrastructure\Interfaces\Auth\Auth
     function isLoggedIn(): bool
     {
         return (bool)$this->session->exist('user');
+    }
+
+    function getCurrentUser()
+    {
+        $user = $this->session->get('user');
+        return $user;
     }
 
 
@@ -75,6 +85,11 @@ class Auth implements \App\Infrastructure\Interfaces\Auth\Auth
         }
     */
 
+    /**
+     * @param string $username имя пользователя
+     * @param string $application Код приложения
+     * @return bool
+     */
     public function checkUserPermissionForApp($username, $application)
     {
         $user = $this->userFinder->byName($username);

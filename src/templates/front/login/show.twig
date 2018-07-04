@@ -3,14 +3,21 @@
 {% import '_/macro_forms.twig' as forms %}
 
 {% block CONTENT %}
-    <div class="column col-4 col-mr-auto">
+    <div class="column col-4 col-mx-auto login-form">
         <h1>{{ title|raw }}</h1>
+        <div class="login-form-logo">
+            <img src="images/login-form/analytics.svg"/>
+        </div>
+        {#
+        <div>Приложение: <span>планы работ</span></div>
+        #}
         <form action="{{ path_for('front.login.post') }}" method="post">
-            {{ forms.hidden('appId', application) }}
+            {{ forms.hidden('application', application) }}
+            {{ forms.hidden('redirectbackurl', redirectbackurl) }}
             {{ forms.hidden('userip', userip) }}
             {{ forms.input('пользователь', 'username', username) }}
             {{ forms.input('пароль', 'password', password, 'password') }}
-            {{ forms.submit('войти', 'login') }}
+            {{ forms.submit('войти') }}
         </form>
     </div>
 {% endblock %}
